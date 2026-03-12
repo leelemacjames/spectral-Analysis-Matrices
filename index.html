@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Spectral Invariants &amp; the Characteristic Polynomial</title>
+<title>Kirchhoff Circuits &amp; Squared Rectangles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,700;9..144,900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
@@ -11,242 +11,225 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
 :root {
-  --bg: #faf8f3;
-  --bg-warm: #f4f0e8;
-  --bg-card: #fff;
-  --text: #2c2417;
-  --text-mid: #5c4f3a;
-  --text-muted: #9a8d78;
-  --heading: #1a1208;
-  --accent: #b44a1e;
-  --accent-dim: rgba(180, 74, 30, 0.1);
-  --accent2: #1a6b4a;
-  --accent2-dim: rgba(26, 107, 74, 0.1);
-  --accent3: #3b5998;
-  --accent3-dim: rgba(59, 89, 152, 0.1);
-  --gold: #c4940a;
-  --gold-dim: rgba(196, 148, 10, 0.08);
-  --border: rgba(44, 36, 23, 0.1);
-  --border-strong: rgba(44, 36, 23, 0.2);
+  --bg: #faf8f3; --bg-warm: #f4f0e8; --bg-card: #fff;
+  --text: #2c2417; --text-mid: #5c4f3a; --text-muted: #9a8d78; --heading: #1a1208;
+  --accent: #b44a1e; --accent-dim: rgba(180,74,30,0.1);
+  --accent2: #1a6b4a; --accent2-dim: rgba(26,107,74,0.1);
+  --accent3: #3b5998; --accent3-dim: rgba(59,89,152,0.1);
+  --gold: #c4940a; --gold-dim: rgba(196,148,10,0.08);
+  --border: rgba(44,36,23,0.1); --border-strong: rgba(44,36,23,0.2);
   --font-body: 'Cormorant Garamond', Georgia, serif;
   --font-display: 'Fraunces', Georgia, serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: var(--font-body); font-size: 19px; line-height: 1.75;
-  -webkit-font-smoothing: antialiased;
-}
-::selection { background: var(--accent-dim); color: var(--accent); }
-.container { max-width: 780px; margin: 0 auto; padding: 0 28px; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); font-size:19px; line-height:1.75; -webkit-font-smoothing:antialiased; }
+::selection { background:var(--accent-dim); color:var(--accent); }
+.container { max-width:780px; margin:0 auto; padding:0 28px; }
 
-header { padding: 72px 0 40px; text-align: center; border-bottom: 1px solid var(--border); }
-header h1 {
-  font-family: var(--font-display); font-weight: 900;
-  font-size: clamp(2rem, 5vw, 3rem); color: var(--heading);
-  line-height: 1.15; letter-spacing: -0.02em;
-}
-header .deck { font-size: 1.05rem; color: var(--text-mid); margin-top: 16px; max-width: 540px; margin-left: auto; margin-right: auto; font-style: italic; }
-header .byline { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-top: 20px; letter-spacing: 0.06em; text-transform: uppercase; }
+header { padding:72px 0 40px; text-align:center; border-bottom:1px solid var(--border); }
+header h1 { font-family:var(--font-display); font-weight:900; font-size:clamp(2rem,5vw,3rem); color:var(--heading); line-height:1.15; letter-spacing:-0.02em; }
+header .deck { font-size:1.05rem; color:var(--text-mid); margin-top:16px; max-width:540px; margin-left:auto; margin-right:auto; font-style:italic; }
+header .byline { font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted); margin-top:20px; letter-spacing:0.06em; text-transform:uppercase; }
 
-section { padding: 48px 0 32px; opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-section.visible { opacity: 1; transform: translateY(0); }
+section { padding:48px 0 32px; opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; }
+section.visible { opacity:1; transform:translateY(0); }
+section:first-of-type { opacity:1; transform:translateY(0); }
 
-h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.55rem; color: var(--heading); margin-bottom: 14px; }
-h2 .num { font-family: var(--font-mono); font-weight: 500; font-size: 0.55em; color: var(--accent); margin-right: 6px; vertical-align: 2px; }
-h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.12rem; color: var(--heading); margin: 24px 0 8px; }
-p { margin-bottom: 14px; }
-strong { font-weight: 700; color: var(--heading); }
+h2 { font-family:var(--font-display); font-weight:700; font-size:1.55rem; color:var(--heading); margin-bottom:14px; }
+h2 .num { font-family:var(--font-mono); font-weight:500; font-size:0.55em; color:var(--accent); margin-right:6px; vertical-align:2px; }
+h3 { font-family:var(--font-body); font-weight:700; font-size:1.12rem; color:var(--heading); margin:24px 0 8px; }
+p { margin-bottom:14px; }
+strong { font-weight:700; color:var(--heading); }
 
-.math-block { background: var(--bg-warm); border: 1px solid var(--border); border-radius: 6px; padding: 16px 20px; margin: 18px 0; overflow-x: auto; text-align: center; }
-.aside { border-left: 3px solid var(--gold); background: var(--gold-dim); padding: 12px 16px; margin: 18px 0; border-radius: 0 6px 6px 0; font-size: 0.95rem; color: var(--text-mid); }
-.aside.green { border-left-color: var(--accent2); background: var(--accent2-dim); }
-.aside.blue { border-left-color: var(--accent3); background: var(--accent3-dim); }
-.aside.red { border-left-color: var(--accent); background: var(--accent-dim); }
-code { font-family: var(--font-mono); font-size: 0.84em; background: var(--bg-warm); padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); }
+.math-block { background:var(--bg-warm); border:1px solid var(--border); border-radius:6px; padding:16px 20px; margin:18px 0; overflow-x:auto; text-align:center; }
+.aside { border-left:3px solid var(--gold); background:var(--gold-dim); padding:12px 16px; margin:18px 0; border-radius:0 6px 6px 0; font-size:0.95rem; color:var(--text-mid); }
+.aside.green { border-left-color:var(--accent2); background:var(--accent2-dim); }
+.aside.blue { border-left-color:var(--accent3); background:var(--accent3-dim); }
+code { font-family:var(--font-mono); font-size:0.84em; background:var(--bg-warm); padding:1px 5px; border-radius:3px; border:1px solid var(--border); }
 
-.canvas-panel { background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: 10px; margin: 22px 0; overflow: hidden; box-shadow: 0 2px 12px rgba(44,36,23,0.04); }
-.canvas-panel .panel-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted); }
-.canvas-panel canvas { display: block; width: 100%; }
-.controls { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 16px; border-top: 1px solid var(--border); }
-.controls button { font-family: var(--font-mono); font-size: 0.76rem; padding: 5px 12px; border: 1px solid var(--border-strong); border-radius: 5px; background: var(--bg); color: var(--text-mid); cursor: pointer; transition: all 0.2s; }
-.controls button:hover { background: var(--bg-warm); border-color: var(--accent); color: var(--accent); }
-.controls button.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 600; }
-.status-line { padding: 6px 16px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.73rem; color: var(--text-muted); min-height: 30px; }
+.canvas-panel { background:var(--bg-card); border:1px solid var(--border-strong); border-radius:10px; margin:22px 0; overflow:hidden; box-shadow:0 2px 12px rgba(44,36,23,0.04); }
+.canvas-panel .panel-head { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border-bottom:1px solid var(--border); font-family:var(--font-mono); font-size:0.76rem; color:var(--text-muted); }
+.canvas-panel canvas { display:block; width:100%; max-height:220px; }
+.controls { display:flex; gap:6px; flex-wrap:wrap; padding:10px 16px; border-top:1px solid var(--border); }
+.controls button { font-family:var(--font-mono); font-size:0.76rem; padding:5px 12px; border:1px solid var(--border-strong); border-radius:5px; background:var(--bg); color:var(--text-mid); cursor:pointer; transition:all 0.2s; }
+.controls button:hover { background:var(--bg-warm); border-color:var(--accent); color:var(--accent); }
+.controls button.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); font-weight:600; }
+.status-line { padding:6px 16px; border-top:1px solid var(--border); font-family:var(--font-mono); font-size:0.73rem; color:var(--text-muted); min-height:30px; }
 
-.inv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
-@media (max-width: 560px) { .inv-grid { grid-template-columns: 1fr; } }
-.inv-card { background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; box-shadow: 0 1px 6px rgba(44,36,23,0.04); }
-.inv-card h4 { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
-.inv-card p { font-size: 0.9rem; margin-bottom: 6px; line-height: 1.55; }
-.inv-card .formula { font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-mid); background: var(--bg-warm); padding: 4px 8px; border-radius: 3px; display: inline-block; }
-
-.sep { width: 60px; height: 1px; background: var(--border-strong); margin: 8px auto; }
-footer { text-align: center; padding: 40px 0 56px; font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border); }
-footer a { color: var(--accent); text-decoration: none; }
-footer a:hover { text-decoration: underline; }
-
-@media (max-width: 600px) { .container { padding: 0 16px; } header { padding: 40px 0 24px; } section { padding: 32px 0 20px; } }
+.sep { width:60px; height:1px; background:var(--border-strong); margin:8px auto; }
+footer { text-align:center; padding:40px 0 56px; font-size:0.82rem; color:var(--text-muted); border-top:1px solid var(--border); }
+footer a { color:var(--accent); text-decoration:none; }
+footer a:hover { text-decoration:underline; }
+@media (max-width:600px) { .container{padding:0 16px;} header{padding:40px 0 24px;} section{padding:32px 0 20px;} }
 </style>
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>Spectral Invariants</h1>
-    <p class="deck">Eigenvalues, the characteristic polynomial, and the hierarchy of graph invariants from Laplacian to Tutte.</p>
-    <p class="byline">Continuation from <a href="https://leelemacjames.github.io/adjacencyMatrix/" style="color:var(--accent)">Incidence Matrices</a></p>
+    <h1>Kirchhoff Circuits &amp; Squared Rectangles</h1>
+    <p class="deck">How electrical networks, the Laplacian, and the sum of squares come together in the geometry of squared tilings.</p>
+    <p class="byline">Continuation from <a href="spectral-invariants.html" style="color:var(--accent)">Spectral Invariants</a></p>
   </div>
 </header>
 
 <main class="container">
 
-<!-- ======= SECTION 1: HAMILTONIAN-LAGRANGIAN ======= -->
-<section id="sec-HL">
-<h2><span class="num">01</span> The Hamiltonian–Lagrangian Analogy</h2>
+<section id="sec-kcl">
+<h2><span class="num">01</span> Kirchhoff's Laws as Linear Algebra</h2>
 
-<p>The incidence matrix \(B\) generates two natural square matrices via the product \(BB^\top\). Since \(BB^\top = D + A\) (where \(D\) is the degree matrix and \(A\) the adjacency matrix), we get a natural splitting into two operators.</p>
+<p>Kirchhoff's two circuit laws are the two fundamental subspaces of the incidence matrix \(B\), now carrying physical units.</p>
+
+<p><strong>Kirchhoff's Current Law (KCL)</strong>: at every node, currents in equal currents out. If \(\mathbf{i}\) is the vector of edge currents (with a chosen orientation):</p>
 
 <div class="math-block">
-$$Q = D + A = BB^\top \qquad \text{(``Hamiltonian'': } T + V\text{)}$$
-$$L = D - A \qquad\quad \text{(``Lagrangian'': } T - V\text{)}$$
+$$B \,\mathbf{i} = \mathbf{0} \quad \text{at interior nodes}$$
 </div>
 
-<p>Think of \(D\) as a "kinetic" term: each vertex's local connectivity, its capacity to transmit. Think of \(A\) as a "potential" term: the coupling between vertices. Their sum \(Q\) is the <strong>signless Laplacian</strong>. Their difference \(L\) is the <strong>graph Laplacian</strong>.</p>
+<p>The current vector lives in the kernel of the (oriented) incidence matrix. We showed earlier that ker(\(B\)) over \(\mathbb{F}_2\) is the cycle space. Over \(\mathbb{R}\) the same structure holds: the current distribution is a superposition of loop currents.</p>
 
-<p>The analogy has teeth. In physics the Hamiltonian generates time evolution and its eigenvalues are energy levels. The Lagrangian's stationary points give the equations of motion. In graph theory:</p>
+<p><strong>Kirchhoff's Voltage Law (KVL)</strong>: voltage drops around any closed loop sum to zero. If \(\mathbf{v}\) is the vector of node potentials, the voltage drop across edge \(e = (a,b)\) is \(v_a - v_b\). In matrix form the drops are \(B^\top \mathbf{v}\), and KVL says this is consistent with Ohm's law: \(\mathbf{i} = G\, B^\top \mathbf{v}\), where \(G\) is the diagonal conductance matrix.</p>
 
-<p>\(Q\) is positive semidefinite. Its smallest eigenvalue is zero only for bipartite graphs. Its spectrum detects bipartiteness and encodes structural information complementary to \(L\).</p>
+<p>Substituting into KCL gives the <strong>network equation</strong>:</p>
 
-<p>\(L\) is positive semidefinite. Its kernel is the space of locally constant functions: one zero eigenvalue per connected component. Its nonzero eigenvalues measure how "hard" it is to cut the graph. The heat equation \(\dot{u} = -Lu\) describes diffusion on the network, exactly as the Lagrangian generates dynamics.</p>
+<div class="math-block">
+$$B\, G\, B^\top \mathbf{v} = \mathbf{j}$$
+</div>
+
+<p>where \(\mathbf{j}\) is the vector of external current injections. With unit conductances (\(G = I\)), this becomes \(L\, \mathbf{v} = \mathbf{j}\). Solving Kirchhoff's circuit is solving a Laplacian system.</p>
 
 <div class="aside">
-<strong>The stationary principle.</strong> The Fiedler vector (eigenvector of the smallest nonzero Laplacian eigenvalue) solves a variational problem: it minimises \(\mathbf{x}^\top L \mathbf{x}\) subject to \(\mathbf{x} \perp \mathbf{1}\) and \(\|\mathbf{x}\| = 1\). This is the graph-theoretic analogue of the principle of least action. The Fiedler vector finds the "easiest cut" of the graph.
+<strong>The two subspaces, physically.</strong> The current space (ker \(B\) over \(\mathbb{R}\)) and the voltage space (im \(B^\top\)) are orthogonal complements. KCL constrains currents to the cycle space. KVL constrains voltages to the cut space. These are the same two subspaces from the incidence matrix theory, now carrying amps and volts.
 </div>
 </section>
 
-<!-- ======= SECTION 2: SPECTRAL EXPLORER ======= -->
-<section id="sec-spectrum">
-<h2><span class="num">02</span> The Eigenvalue Spectrum</h2>
+<section id="sec-squared">
+<h2><span class="num">02</span> Squared Rectangles from Circuits</h2>
 
-<p>The eigenvalues of \(L\), \(Q\), and \(A\) are three different windows onto the same graph. Each carries distinct information.</p>
+<p>In 1940, Brooks, Smith, Stone and Tutte discovered that <strong>squared rectangles</strong> — rectangles partitioned into non-overlapping squares — correspond exactly to planar electrical networks.</p>
 
-<div class="canvas-panel">
-  <div class="panel-head"><span>Spectral Explorer</span><span id="specInfo">Eigenvalues of L, Q, and A</span></div>
-  <canvas id="cvSpec" height="380"></canvas>
-  <div class="controls">
-    <button id="btnSpecTri" class="active">Triangle</button>
-    <button id="btnSpecSq">Square</button>
-    <button id="btnSpecK4">K₄</button>
-    <button id="btnSpecPath">Path P₄</button>
-    <button id="btnSpecHouse">House</button>
-  </div>
-  <div class="status-line" id="specStatus">Eigenvalues shown as bars. L (green), Q (blue), A (orange).</div>
+<p>The construction: take a planar graph, assign 1Ω to every edge, inject current from a source node to a sink node, and solve Kirchhoff's equations. The current through each edge gives the <strong>side length</strong> of a square. Horizontal cuts through the rectangle are nodes; the squares between adjacent cuts are edges (resistors).</p>
+
+<h3>The worked example: 3×2 rectangle</h3>
+
+<p>Consider a graph with three nodes (0, 1, 2) and three edges, each of resistance 1Ω. Edge A runs directly from node 0 to node 2. Edge B runs from node 0 to node 1. Edge C runs from node 1 to node 2. This is a parallel-series topology: the direct edge A is in parallel with the series pair B + C.</p>
+
+<div class="math-block" style="text-align:left; font-size:0.95rem;">
+<strong>Three edges, each 1Ω.</strong> The path through A has resistance 1Ω. The path through B then C has resistance 1Ω + 1Ω = 2Ω. These paths are in parallel.<br><br>
+<strong>Total resistance:</strong> \(R_{\text{total}} = \frac{1}{\frac{1}{1} + \frac{1}{2}} = \frac{2}{3}\,\Omega\).<br><br>
+<strong>Choose height = 2</strong> (voltage across the network). Total current = \(V / R = 3\)A = width of the rectangle.<br><br>
+<strong>Edge A</strong> (node 0 → 2, 1Ω): voltage drop = 2V, current \(I_A = 2/1 = 2\)A. Since \(R = 1\Omega\), the drop equals the current: \(V_A = I_A = 2\). This edge produces a <strong>square of side 2</strong>.<br><br>
+<strong>Edges B and C</strong> (node 0 → 1 → 2, each 1Ω): the series pair shares current \(I = 1\)A. Each edge drops 1V across 1Ω: \(V_B = I_B = 1\), \(V_C = I_C = 1\). Each produces a <strong>square of side 1</strong>, stacked vertically.
 </div>
 
-<p>The <strong>Laplacian spectrum</strong> (green bars) always starts with at least one zero. Additional zeros indicate disconnected components. The first nonzero eigenvalue \(\lambda_2\) (the Fiedler value or algebraic connectivity) measures how tightly connected the graph is. For the complete graph \(K_4\), \(\lambda_2 = 4\); for the path \(P_4\), \(\lambda_2 \approx 0.59\). Paths are easy to cut; complete graphs are not.</p>
+<p>Every edge is 1Ω. For each individual edge, Ohm's law gives \(V_e = I_e \times 1\Omega = I_e\). The voltage drop across the edge equals the current through it. In the rectangle, voltage drop = height of the piece and current = width of the piece. Equal height and width: a square. The series path through B and C has total resistance 2Ω as a <em>path</em>, but each individual edge within it is still 1Ω and produces its own square.</p>
 
-<p>The <strong>signless Laplacian spectrum</strong> (blue bars) is always nonneg­ative. Its smallest eigenvalue is zero if and only if the graph has a bipartite component. Check: the square and path are bipartite (smallest blue bar at zero); the triangle and \(K_4\) are not.</p>
+<div class="canvas-panel">
+  <div class="panel-head"><span>Circuit ↔ Rectangle</span><span id="circInfo">Hover over a square to highlight its resistor</span></div>
+  <canvas id="cvCircuit" height="220"></canvas>
+  <div class="controls">
+    <button id="btnCirc1" class="active">3×2 (parallel-series)</button>
+    <button id="btnCirc2">6×5 (double parallel)</button>
+    <button id="btnCirc3">Moron 33×32</button>
+  </div>
+  <div class="status-line" id="circStatus">Left: resistor network. Right: squared rectangle. Each edge (1Ω) → one square. Current = side length.</div>
+</div>
 
-<p>The <strong>adjacency spectrum</strong> (orange bars) can be negative. For a \(d\)-regular graph, the largest adjacency eigenvalue is always \(d\). The gap between the largest and second-largest eigenvalue controls expansion and mixing.</p>
+<div class="aside">
+<strong>Why 1Ω per edge?</strong> The BSST construction assigns 1Ω to every edge of the graph. Each edge becomes one square. For that edge, \(V = IR = I \times 1 = I\), so the voltage drop (height of the square) equals the current (width of the square). That is the entire reason the pieces are squares, not rectangles. The <em>path</em> resistance through a series chain of \(k\) edges is \(k\,\Omega\), but each of the \(k\) edges separately satisfies \(V_e = I_e\), producing \(k\) unit-aspect-ratio squares stacked vertically with the same width.
+</div>
+
+<h3>The Moron network</h3>
+
+<p>For the 33×32 rectangle, the circuit has 6 nodes (horizontal cuts at \(y = 0, 15, 18, 22, 23, 32\)) and 9 edges (one per square). Current conservation holds at every internal node:</p>
+
+<div class="math-block" style="text-align:left; font-size:0.9rem;">
+Node \(y\!=\!15\): in = 15 (from square s=15), out = 8 + 7 = 15 ✓<br>
+Node \(y\!=\!18\): in = 18 (from square s=18), out = 4 + 14 = 18 ✓<br>
+Node \(y\!=\!22\): in = 7 + 4 = 11, out = 1 + 10 = 11 ✓<br>
+Node \(y\!=\!23\): in = 8 + 1 = 9, out = 9 ✓
+</div>
+
+<p>The total current entering node 0 (top) is \(15 + 18 = 33\) = width. The total voltage drop from top to bottom is 32 = height. The tiny 1A current through the 1×1 square is forced by the topology: without it, KCL fails at nodes 22 and 23.</p>
+
+<h3>The tiling gallery</h3>
+
+<div class="canvas-panel">
+  <div class="panel-head"><span>Squared Rectangle Gallery</span><span id="sqrInfo">Verified tilings</span></div>
+  <canvas id="cvSqRect" height="220"></canvas>
+  <div class="controls">
+    <button id="btnSqr1" class="active">3-square (3×2)</button>
+    <button id="btnSqr2">5-square (6×5)</button>
+    <button id="btnSqr3">Moron 9-square</button>
+    <button id="btnSqr4">Scaled ×2</button>
+  </div>
+  <div class="status-line" id="sqrStatus">Each square's side length = current through the corresponding edge.</div>
+</div>
 </section>
 
-<!-- ======= SECTION 3: CHARACTERISTIC POLYNOMIAL ======= -->
-<section id="sec-charpoly">
-<h2><span class="num">03</span> The Characteristic Polynomial</h2>
+<section id="sec-backtrack">
+<h2><span class="num">03</span> Backtracking Square Tilings</h2>
 
-<p>All three spectra are roots of their respective characteristic polynomials. For the adjacency matrix:</p>
-
-<div class="math-block">
-$$p_A(\lambda) = \det(\lambda I - A)$$
-</div>
-
-<p>This is a polynomial of degree \(|V|\) whose roots are the eigenvalues. But its <strong>coefficients</strong> carry independent combinatorial meaning. The coefficient of \(\lambda^{n-k}\) in \(p_A(\lambda)\) counts (with sign) the number of certain subgraph structures with \(k\) edges. Specifically, it sums over all "elementary subgraphs" — disjoint unions of edges and cycles — that cover exactly \(k\) vertices.</p>
-
-<p>For the Laplacian, the characteristic polynomial encodes even more. By the Matrix-Tree theorem, the coefficient of \(\lambda\) in \(p_L(\lambda)\) (up to sign) equals the number of spanning trees times \(n\):</p>
-
-<div class="math-block">
-$$p_L(\lambda) = \lambda \prod_{i=2}^n (\lambda - \lambda_i) \implies \text{coefficient of } \lambda = (-1)^{n-1} \prod_{i=2}^n \lambda_i = (-1)^{n-1} n \cdot \tau(G)$$
-</div>
-
-<p>where \(\tau(G)\) is the number of spanning trees.</p>
+<p>Finding a valid squared tiling of a given rectangle is a constraint satisfaction problem. Not every sum-of-squares decomposition of an area \(W \times H\) corresponds to a valid tiling: the squares must physically fit without overlapping. The approach is a backtracking algorithm that scans the rectangle left-to-right, bottom-to-top, and at each empty cell tries the largest square that fits. If it reaches a dead end (an empty cell where no square fits), it backtracks and tries the next smaller size.</p>
 
 <div class="canvas-panel">
-  <div class="panel-head"><span>Characteristic Polynomial</span><span id="charInfo">Coefficients of det(λI − M)</span></div>
-  <canvas id="cvChar" height="380"></canvas>
-  <div class="controls">
-    <button id="btnCharTri" class="active">Triangle</button>
-    <button id="btnCharSq">Square</button>
-    <button id="btnCharK4">K₄</button>
-    <button id="btnCharPath">Path P₄</button>
+  <div class="panel-head"><span>Backtracking Tiler</span><span id="btInfo">Enter dimensions and tile</span></div>
+  <canvas id="cvBacktrack" height="220"></canvas>
+  <div class="controls" style="align-items:center;">
+    <label style="font-family:var(--font-mono);font-size:0.76rem;color:var(--text-mid);">W×H:</label>
+    <input id="inpW" type="number" value="14" min="1" max="30" style="width:42px;font-family:var(--font-mono);font-size:0.76rem;padding:4px 6px;border:1px solid var(--border-strong);border-radius:4px;background:var(--bg);color:var(--text);">
+    <span style="font-family:var(--font-mono);font-size:0.76rem;color:var(--text-muted);">×</span>
+    <input id="inpH" type="number" value="3" min="1" max="30" style="width:42px;font-family:var(--font-mono);font-size:0.76rem;padding:4px 6px;border:1px solid var(--border-strong);border-radius:4px;background:var(--bg);color:var(--text);">
+    <button id="btnTile">Tile it</button>
+    <button id="btnTile10x3">10×3</button>
+    <button id="btnTile14x3" class="active">14×3</button>
+    <button id="btnTile8x5">8×5</button>
+    <button id="btnTile22x3">22×3</button>
   </div>
-  <div class="status-line" id="charStatus">Polynomial coefficients shown for A and L.</div>
+  <div class="status-line" id="btStatus">Click "Tile it" to find a square tiling by backtracking.</div>
 </div>
+
+<p>The 14×3 rectangle (area 42) decomposes as \(4 \cdot 3^2 + 2^2 + 2 \cdot 1^2 = 36 + 4 + 2 = 42\). The algorithm finds this tiling by placing four 3×3 squares, then a 2×2, then filling the remaining two 1×1 gaps. For 10×3 (area 30), the tiling uses three 3×3 squares and three 1×1 squares: \(3 \cdot 3^2 + 3 \cdot 1^2 = 27 + 3 = 30\).</p>
+
+<div class="aside">
+<strong>Connection to circuits.</strong> Each valid tiling defines a planar electrical network (the BSST construction in reverse). The horizontal cuts become nodes, the squares become 1Ω resistors, and KCL at each node is the geometric constraint that widths sum correctly. The backtracking algorithm is, in effect, searching for a valid Kirchhoff solution.
+</div>
+</section>
+
+<section id="sec-sumsq">
+<h2><span class="num">04</span> Sum of Squares and the Matrix-Tree Theorem</h2>
+
+<p>The total area of a squared rectangle is the sum of the squares of the side lengths:</p>
+
+<div class="math-block">
+$$\sum_{\text{squares}} s_i^2 = W \times H$$
+</div>
+
+<p>Each square of side \(s\) has area \(s^2\). The total area is width times height. The side lengths come from Kirchhoff's equations (= the Laplacian), and whether they come out as integers is controlled by the <strong>determinant of the reduced Laplacian</strong>. By Kirchhoff's Matrix-Tree theorem, this determinant equals the number of spanning trees.</p>
+
+<p>For the 3×2 rectangle with squares of sides 2, 1, 1: the sum of squares is \(4 + 1 + 1 = 6 = 3 \times 2\). For Moron's 33×32: the sum \(15^2 + 18^2 + 8^2 + 7^2 + 1^2 + 9^2 + 10^2 + 4^2 + 14^2 = 1056 = 33 \times 32\).</p>
 
 <div class="aside green">
-<strong>From Fibonacci to characteristic polynomials.</strong> The Fibonacci matrix \(Q = \begin{pmatrix}1&1\\1&0\end{pmatrix}\) has characteristic polynomial \(\lambda^2 - \lambda - 1\). Its roots are \(\phi = \frac{1+\sqrt{5}}{2}\) (the golden ratio) and \(\hat{\phi} = \frac{1-\sqrt{5}}{2}\). The closed-form Binet formula \(F_n = \frac{\phi^n - \hat{\phi}^n}{\sqrt{5}}\) comes directly from diagonalising \(Q\) via its characteristic polynomial. The same idea — eigendecomposition via the characteristic polynomial — gives closed-form expressions for random walks, diffusion, and mixing on graphs.
-</div>
-</section>
-
-<!-- ======= SECTION 4: THE HIERARCHY ======= -->
-<section id="sec-hierarchy">
-<h2><span class="num">04</span> The Invariant Hierarchy</h2>
-
-<p>Eigenvalues are powerful but not all-powerful. There exist non-isomorphic graphs with identical spectra (cospectral graphs). The full hierarchy of invariants, from weakest to strongest:</p>
-
-<div class="inv-grid">
-  <div class="inv-card">
-    <h4>Kirchhoff's Theorem</h4>
-    <p>The number of spanning trees equals any cofactor of \(L\), or equivalently \(\frac{1}{n}\prod_{i=2}^{n} \lambda_i\).</p>
-    <p>A single number extracted from the Laplacian that counts a topological quantity. The descendant of the Fibonacci determinant.</p>
-  </div>
-  <div class="inv-card">
-    <h4>Chromatic Polynomial</h4>
-    <p>\(P(G, k)\) counts proper colourings with \(k\) colours. It is a polynomial in \(k\) whose coefficients encode the graph's cycle structure. \(P(G, k) = 0\) for \(k < \chi(G)\), the chromatic number.</p>
-  </div>
-  <div class="inv-card">
-    <h4>Ihara Zeta Function</h4>
-    <p>Counts prime (backtrackless) cycles. For adjacency matrix \(A\) and degree matrix \(D\):</p>
-    <p class="formula">\(\zeta_G(u)^{-1} = (1-u^2)^{|E|-|V|} \det(I - Au + (D-I)u^2)\)</p>
-    <p>A graph-theoretic Riemann zeta. The Riemann hypothesis for regular graphs is equivalent to the graph being Ramanujan (optimal spectral gap).</p>
-  </div>
-  <div class="inv-card">
-    <h4>Tutte Polynomial</h4>
-    <p>\(T(G; x, y)\) is the universal deletion-contraction invariant. Special evaluations yield: spanning trees (\(T(1,1)\)), colourings, reliability, the Jones polynomial, and the Potts model partition function.</p>
-    <p>Strictly stronger than any single matrix invariant.</p>
-  </div>
+<strong>The connection closes.</strong> The number of spanning trees (a topological invariant computed from the Laplacian determinant) controls whether a graph produces an integer squared rectangle. The effective resistance between two nodes is \(R_{ab} = (\mathbf{e}_a - \mathbf{e}_b)^\top L^+ (\mathbf{e}_a - \mathbf{e}_b)\), where \(L^+\) is the pseudoinverse. The total effective resistance \(\sum_{a < b} R_{ab} = n \sum_{i=2}^n \frac{1}{\lambda_i}\) ties the circuit back to the Laplacian spectrum.
 </div>
 
-<h3>The Potts model and the surface code</h3>
-
-<p>The Tutte polynomial of a planar graph, evaluated along a certain curve, gives the partition function of the \(q\)-state Potts model. The Ising model is \(q = 2\). The surface code error threshold maps to the phase transition of the random-bond Ising model. So the invariant hierarchy closes on the physics:</p>
-
-<div class="math-block" style="text-align: left; font-size: 0.92rem; line-height: 2;">
-<strong>Determinant</strong> (Fibonacci) → counts a single quantity<br>
-<strong>Spectrum</strong> (eigenvalues) → counts spanning trees, measures connectivity<br>
-<strong>Characteristic polynomial</strong> → encodes the full spectrum in one object<br>
-<strong>Ihara zeta</strong> → counts prime cycles, the "Riemann hypothesis" for graphs<br>
-<strong>Tutte polynomial</strong> → universal invariant, contains all above as special cases<br>
-<strong>Potts partition function</strong> → statistical mechanics on the graph = error threshold
+<div class="aside">
+<strong>From Fibonacci to Kirchhoff.</strong> The Fibonacci matrix had \(\det(Q^n) = (-1)^n\), always \(\pm 1\). The graph Laplacian's cofactor determinant counts spanning trees. Both are determinantal invariants. The Fibonacci recurrence is a 1D circuit (a chain of unit resistors). Kirchhoff's theorem generalises the determinant-as-invariant idea from a single recurrence to an arbitrary network. The sum of squares identity for squared rectangles is the geometric manifestation of this algebraic fact.
 </div>
-
-<div class="aside red">
-<strong>What none of these capture.</strong> All of the above are graph invariants: they are preserved under relabelling of vertices. But none distinguishes all non-isomorphic graphs. The graph isomorphism problem — whether two graphs are "the same" up to relabelling — remains unresolved by any known polynomial-time invariant. The Weisfeiler-Leman hierarchy of colour-refinement algorithms gives progressively stronger (but never complete) tests. Whether graph isomorphism is in P remains open.
-</div>
-
 </section>
 
 <div class="sep"></div>
 
 <footer>
-  <p>Spectral Invariants &amp; the Characteristic Polynomial</p>
+  <p>Kirchhoff Circuits &amp; Squared Rectangles</p>
   <p style="margin-top:6px;">
-    Prev: <a href="https://leelemacjames.github.io/adjacencyMatrix/">Incidence Matrices</a>
-    &middot; Next: <a href="https://leelemacjames.github.io/kirchoff-compositerectangle/">Kirchhoff Circuits &amp; Squared Rectangles</a>
+    Prev: <a href="spectral-invariants.html">Spectral Invariants</a>
+    &middot; <a href="incidence-matrices.html">Incidence Matrices</a>
     &middot; <a href="quantum-error-correction.html">Quantum Error Correction</a>
   </p>
+  <p style="margin-top:6px;font-size:0.78rem;">GitHub Pages: <a href="https://leelemacjames.github.io/adjacencyMatrix/">Adjacency Matrix</a> · <a href="https://leelemacjames.github.io/spectral-Analysis-Matrices/">Spectral Analysis</a> · <a href="https://leelemacjames.github.io/kirchoff-compositerectangle/">Kirchhoff Rectangles</a></p>
 </footer>
 
 </main>
@@ -265,260 +248,482 @@ const COL = {
   green:'#1a6b4a', greenDim:'rgba(26,107,74,0.12)',
   blue:'#3b5998', blueDim:'rgba(59,89,152,0.15)',
   gold:'#c4940a', text:'#2c2417', textMid:'#5c4f3a', textMuted:'#9a8d78',
-  border:'rgba(44,36,23,0.15)', bg:'#faf8f3', bgWarm:'#f4f0e8',
+  border:'rgba(44,36,23,0.15)',
 };
-
-// Graph presets
-const GRAPHS = {
-  triangle: { verts:[[0.5,0.05],[0.15,0.85],[0.85,0.85]], edges:[[0,1],[1,2],[0,2]], labels:['A','B','C'] },
-  square: { verts:[[0.2,0.2],[0.8,0.2],[0.8,0.8],[0.2,0.8]], edges:[[0,1],[1,2],[2,3],[0,3]], labels:['A','B','C','D'] },
-  k4: { verts:[[0.5,0.08],[0.1,0.65],[0.9,0.65],[0.5,0.92]], edges:[[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]], labels:['A','B','C','D'] },
-  path: { verts:[[0.1,0.5],[0.37,0.5],[0.63,0.5],[0.9,0.5]], edges:[[0,1],[1,2],[2,3]], labels:['A','B','C','D'] },
-  house: { verts:[[0.5,0.08],[0.15,0.45],[0.85,0.45],[0.85,0.9],[0.15,0.9]], edges:[[0,1],[0,2],[1,2],[1,4],[2,3],[3,4]], labels:['A','B','C','D','E'] }
-};
-
-function buildAdjMatrix(g) {
-  const n = g.verts.length;
-  const A = Array.from({length:n}, ()=>new Array(n).fill(0));
-  for (const [a,b] of g.edges) { A[a][b]=1; A[b][a]=1; }
-  return A;
-}
-
-// Jacobi eigenvalue solver for small symmetric matrices
-function eigenvalues(M) {
-  const n = M.length;
-  let A = M.map(r=>[...r]);
-  for (let iter = 0; iter < 200; iter++) {
-    let maxVal=0, p=0, q=1;
-    for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) if (Math.abs(A[i][j])>maxVal) { maxVal=Math.abs(A[i][j]); p=i; q=j; }
-    if (maxVal < 1e-10) break;
-    const theta = 0.5*Math.atan2(2*A[p][q], A[p][p]-A[q][q]);
-    const cosT=Math.cos(theta), sinT=Math.sin(theta);
-    const nA = A.map(r=>[...r]);
-    for (let i=0;i<n;i++) { nA[i][p]=A[i][p]*cosT+A[i][q]*sinT; nA[i][q]=-A[i][p]*sinT+A[i][q]*cosT; }
-    for (let i=0;i<n;i++) { A[i][p]=nA[i][p]; A[i][q]=nA[i][q]; }
-    for (let j=0;j<n;j++) { nA[p][j]=A[p][j]*cosT+A[q][j]*sinT; nA[q][j]=-A[p][j]*sinT+A[q][j]*cosT; }
-    for (let j=0;j<n;j++) { A[p][j]=nA[p][j]; A[q][j]=nA[q][j]; }
-  }
-  return Array.from({length:n}, (_,i)=>Math.round(A[i][i]*1000)/1000).sort((a,b)=>a-b);
-}
-
-function getMatrices(gName) {
-  const g = GRAPHS[gName]; const n = g.verts.length;
-  const A = buildAdjMatrix(g);
-  const D = Array.from({length:n}, (_,i)=>{ const r=new Array(n).fill(0); r[i]=g.edges.filter(([a,b])=>a===i||b===i).length; return r; });
-  const L = Array.from({length:n}, (_,i)=>D[i].map((d,j)=>d-A[i][j]));
-  const Q = Array.from({length:n}, (_,i)=>D[i].map((d,j)=>d+A[i][j]));
-  return { A, L, Q, D, n, nE: g.edges.length };
-}
 
 // ============================================================
-//  PANEL 1: SPECTRAL EXPLORER
+//  CIRCUIT ↔ RECTANGLE DUAL PANEL
 // ============================================================
 (function(){
-  let {c,ctx,w,h} = setupCanvas('cvSpec');
-  let currentGraph = 'triangle';
+  let {c,ctx,w,h} = setupCanvas('cvCircuit');
+  let hoveredEdge = -1;
+
+  // Circuit definitions: nodes (y-positions), edges (from, to, current/side)
+  const CIRCUITS = {
+    circ1: {
+      name: '3×2 parallel-series',
+      W: 3, H: 2,
+      nodes: [
+        {y:0, label:'0 (top)', pos:0},
+        {y:1, label:'1 (mid)', pos:0.5},
+        {y:2, label:'2 (bot)', pos:1}
+      ],
+      edges: [
+        {from:0, to:2, current:2, label:'2A (1Ω)'},
+        {from:0, to:1, current:1, label:'1A (1Ω)'},
+        {from:1, to:2, current:1, label:'1A (1Ω)'}
+      ],
+      squares: [{x:0,y:0,s:2},{x:2,y:0,s:1},{x:2,y:1,s:1}],
+      info: 'R_total = 2/3 Ω | V = 2V | I = 3A'
+    },
+    circ2: {
+      name: '6×5 double parallel',
+      W: 6, H: 5,
+      nodes: [
+        {y:0, label:'0 (top)', pos:0},
+        {y:3, label:'1 (y=3)', pos:0.6},
+        {y:5, label:'2 (bot)', pos:1}
+      ],
+      edges: [
+        {from:0, to:1, current:3, label:'3A'},
+        {from:0, to:1, current:3, label:'3A'},
+        {from:1, to:2, current:2, label:'2A'},
+        {from:1, to:2, current:2, label:'2A'},
+        {from:1, to:2, current:2, label:'2A'}
+      ],
+      squares: [{x:0,y:0,s:3},{x:3,y:0,s:3},{x:0,y:3,s:2},{x:2,y:3,s:2},{x:4,y:3,s:2}],
+      info: 'Two parallel paths of 2 and 3 resistors'
+    },
+    circ3: {
+      name: 'Moron 33×32',
+      W: 33, H: 32,
+      nodes: [
+        {y:0, label:'0', pos:0},
+        {y:15, label:'15', pos:15/32},
+        {y:18, label:'18', pos:18/32},
+        {y:22, label:'22', pos:22/32},
+        {y:23, label:'23', pos:23/32},
+        {y:32, label:'32', pos:1}
+      ],
+      edges: [
+        {from:0, to:1, current:15, label:'15A'},
+        {from:0, to:2, current:18, label:'18A'},
+        {from:1, to:4, current:8, label:'8A'},
+        {from:1, to:3, current:7, label:'7A'},
+        {from:3, to:4, current:1, label:'1A'},
+        {from:4, to:5, current:9, label:'9A'},
+        {from:3, to:5, current:10, label:'10A'},
+        {from:2, to:3, current:4, label:'4A'},
+        {from:2, to:5, current:14, label:'14A'}
+      ],
+      squares: [{x:0,y:0,s:15},{x:15,y:0,s:18},{x:0,y:15,s:8},{x:8,y:15,s:7},{x:8,y:22,s:1},{x:0,y:23,s:9},{x:9,y:22,s:10},{x:15,y:18,s:4},{x:19,y:18,s:14}],
+      info: 'I_total = 33A = width | V = 32V = height'
+    }
+  };
+
+  let current = 'circ1';
+
+  const palette = ['#b44a1e','#1a6b4a','#3b5998','#c4940a','#8e44ad','#16a085','#c0392b','#2c3e50','#27ae60'];
+  const paletteDim = ['rgba(180,74,30,0.5)','rgba(26,107,74,0.5)','rgba(59,89,152,0.5)','rgba(196,148,10,0.5)','rgba(142,68,173,0.45)','rgba(22,160,133,0.45)','rgba(192,57,43,0.45)','rgba(44,62,80,0.4)','rgba(39,174,96,0.45)'];
 
   function draw() {
     ctx.clearRect(0,0,w,h);
-    const {A,L,Q,n,nE} = getMatrices(currentGraph);
-    const eigL=eigenvalues(L), eigQ=eigenvalues(Q), eigA=eigenvalues(A);
+    const circ = CIRCUITS[current];
+    const nN = circ.nodes.length, nE = circ.edges.length;
 
-    let spanTrees=1;
-    eigL.forEach(lam=>{ if(Math.abs(lam)>0.01) spanTrees*=lam; });
-    spanTrees=Math.round(spanTrees/n);
+    // === LEFT SIDE: Circuit diagram ===
+    const cw = w * 0.32, ch = h - 30;
+    const cx = 30, cy = 16;
 
-    const pad={top:50,bottom:60,left:60,right:20};
-    const plotW=w-pad.left-pad.right, plotH=h-pad.top-pad.bottom;
-    const allEig=[...eigL,...eigQ,...eigA];
-    const maxEig=Math.max(...allEig.map(Math.abs),1);
-    const groupW=plotW/3, barW=Math.min(groupW/(n+1),24);
+    // Draw nodes as horizontal lines
+    circ.nodes.forEach((nd, ni) => {
+      const ny = cy + nd.pos * ch;
+      ctx.strokeStyle = (ni === 0 || ni === nN-1) ? COL.text : COL.border;
+      ctx.lineWidth = (ni === 0 || ni === nN-1) ? 2 : 1;
+      ctx.setLineDash(ni > 0 && ni < nN-1 ? [4,3] : []);
+      ctx.beginPath(); ctx.moveTo(cx, ny); ctx.lineTo(cx + cw - 20, ny); ctx.stroke();
+      ctx.setLineDash([]);
 
-    const groups=[
-      {label:'Laplacian L = D − A', eigs:eigL, color:COL.green, dim:COL.greenDim},
-      {label:'Signless Q = D + A', eigs:eigQ, color:COL.blue, dim:COL.blueDim},
-      {label:'Adjacency A', eigs:eigA, color:COL.accent, dim:COL.accentDim},
-    ];
+      // node label
+      ctx.fillStyle = COL.textMuted; ctx.font = '500 9px "IBM Plex Mono"';
+      ctx.textAlign = 'right'; ctx.fillText('y=' + nd.label, cx - 6, ny + 3);
+    });
 
-    const zeroY=pad.top+plotH*(maxEig/(2*maxEig));
-    ctx.strokeStyle=COL.border; ctx.lineWidth=1; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(pad.left,zeroY); ctx.lineTo(w-pad.right,zeroY); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle=COL.textMuted; ctx.font='10px "IBM Plex Mono"'; ctx.textAlign='right';
-    ctx.fillText('0',pad.left-6,zeroY+3);
+    // Draw edges as resistor symbols between nodes
+    const edgeSpacing = (cw - 40) / Math.max(...circ.edges.map((e,i) => {
+      return circ.edges.filter(e2 => e2.from === e.from && e2.to === e.to).length;
+    }), 1);
 
-    groups.forEach((grp,gi)=>{
-      const gx=pad.left+gi*groupW;
-      ctx.fillStyle=grp.color; ctx.font='500 10px "IBM Plex Mono"'; ctx.textAlign='center';
-      ctx.fillText(grp.label, gx+groupW/2, pad.top-14);
-      grp.eigs.forEach((lam,bi)=>{
-        const bx=gx+(groupW-n*barW)/2+bi*barW;
-        const barH=(lam/(2*maxEig))*plotH, by=zeroY-barH;
-        ctx.fillStyle=grp.dim;
-        ctx.fillRect(bx+2, Math.min(by,zeroY), barW-4, Math.abs(barH));
-        ctx.fillStyle=grp.color;
-        ctx.fillRect(bx+2, Math.min(by,zeroY), barW-4, 2);
-        ctx.font='500 9px "IBM Plex Mono"'; ctx.textAlign='center';
-        const labelY=lam>=0?Math.min(by,zeroY)-5:Math.max(by+Math.abs(barH),zeroY)+12;
-        ctx.fillText(lam.toFixed(1), bx+barW/2-1, labelY);
+    // Group edges by (from,to) pair for horizontal spacing
+    const groups = {};
+    circ.edges.forEach((e, i) => {
+      const key = `${e.from}-${e.to}`;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(i);
+    });
+
+    circ.edges.forEach((edge, ei) => {
+      const key = `${edge.from}-${edge.to}`;
+      const siblings = groups[key];
+      const sibIdx = siblings.indexOf(ei);
+      const totalSibs = siblings.length;
+
+      const y1 = cy + circ.nodes[edge.from].pos * ch;
+      const y2 = cy + circ.nodes[edge.to].pos * ch;
+
+      // horizontal position: spread siblings, also spread different groups
+      const groupKeys = Object.keys(groups);
+      const gIdx = groupKeys.indexOf(key);
+      const baseX = cx + 20 + (gIdx / (groupKeys.length)) * (cw - 60);
+      const ex = baseX + (sibIdx - (totalSibs-1)/2) * 28;
+
+      const isHovered = ei === hoveredEdge;
+      const col = isHovered ? palette[ei % palette.length] : COL.textMid;
+
+      // vertical line (wire)
+      ctx.strokeStyle = col;
+      ctx.lineWidth = isHovered ? 3 : 1.5;
+      ctx.beginPath(); ctx.moveTo(ex, y1); ctx.lineTo(ex, y2); ctx.stroke();
+
+      // resistor zigzag in middle
+      const midY = (y1 + y2) / 2;
+      const rh = Math.min((y2 - y1) * 0.3, 20);
+      ctx.strokeStyle = col; ctx.lineWidth = isHovered ? 2.5 : 1.5;
+      ctx.beginPath();
+      ctx.moveTo(ex, midY - rh);
+      for (let z = 0; z < 4; z++) {
+        ctx.lineTo(ex + (z%2===0?6:-6), midY - rh + (z+0.5)*(2*rh/4));
+      }
+      ctx.lineTo(ex, midY + rh);
+      ctx.stroke();
+
+      // current label
+      ctx.fillStyle = isHovered ? palette[ei % palette.length] : COL.textMuted;
+      ctx.font = `${isHovered?'600':'500'} ${isHovered?11:9}px "IBM Plex Mono"`;
+      ctx.textAlign = 'left';
+      ctx.fillText(edge.current + 'A', ex + 10, midY + 3);
+
+      // dots at endpoints
+      [y1, y2].forEach(yy => {
+        ctx.beginPath(); ctx.arc(ex, yy, 3, 0, Math.PI*2);
+        ctx.fillStyle = col; ctx.fill();
       });
     });
 
-    const annY=h-36;
-    ctx.font='500 11px "IBM Plex Mono"'; ctx.textAlign='center';
-    ctx.fillStyle=COL.green; ctx.fillText(`Spanning trees: ${spanTrees}`, pad.left+groupW*0.5, annY);
-    const qMin=eigQ[0];
-    ctx.fillStyle=COL.blue; ctx.fillText(Math.abs(qMin)<0.01?'Bipartite: yes':'Bipartite: no', pad.left+groupW*1.5, annY);
-    const nComp=eigL.filter(l=>Math.abs(l)<0.01).length;
-    ctx.fillStyle=COL.accent; ctx.fillText(`Components: ${nComp}`, pad.left+groupW*2.5, annY);
-    const fiedler=eigL.find(l=>l>0.01)||0;
-    ctx.fillStyle=COL.textMuted; ctx.font='10px "IBM Plex Mono"';
-    ctx.fillText(`Fiedler value (algebraic connectivity): λ₂ = ${fiedler.toFixed(3)}`, w/2, annY+18);
+    // Source/sink labels
+    ctx.fillStyle = COL.accent; ctx.font = '600 10px "IBM Plex Mono"'; ctx.textAlign = 'center';
+    ctx.fillText('SOURCE (+)', cx + cw/2 - 10, cy - 10);
+    ctx.fillText('SINK (−)', cx + cw/2 - 10, cy + ch + 16);
 
-    document.getElementById('specStatus').textContent=
-      `${n} vertices, ${nE} edges | Spanning trees: ${spanTrees} | λ₂(L) = ${fiedler.toFixed(3)} | `+(Math.abs(qMin)<0.01?'Bipartite':'Not bipartite');
+    // === RIGHT SIDE: Squared rectangle ===
+    const rpad = 20;
+    const rx = w * 0.38, ry = 16;
+    const rw = w - rx - rpad, rh = h - 40;
+    const scale = Math.min(rw / circ.W, rh / circ.H);
+    const ox = rx + (rw - circ.W * scale) / 2;
+    const oy = ry + (rh - circ.H * scale) / 2;
+
+    // outer rect
+    ctx.strokeStyle = COL.text; ctx.lineWidth = 2;
+    ctx.strokeRect(ox, oy, circ.W * scale, circ.H * scale);
+
+    // squares
+    circ.squares.forEach((sq, i) => {
+      const sx = ox + sq.x * scale, sy = oy + sq.y * scale, ss = sq.s * scale;
+      const isHL = i === hoveredEdge;
+      ctx.fillStyle = isHL ? palette[i%palette.length] + 'cc' : paletteDim[i%paletteDim.length];
+      ctx.fillRect(sx, sy, ss, ss);
+      ctx.strokeStyle = isHL ? palette[i%palette.length] : palette[i%palette.length] + '88';
+      ctx.lineWidth = isHL ? 3 : 1;
+      ctx.strokeRect(sx, sy, ss, ss);
+
+      if (ss > 16) {
+        ctx.fillStyle = '#fff'; ctx.font = `600 ${Math.min(ss*0.32, 15)}px "IBM Plex Mono"`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(String(sq.s), sx+ss/2, sy+ss/2);
+      }
+    });
+
+    // Horizontal cut lines (nodes)
+    const ySet = new Set();
+    circ.squares.forEach(sq => { ySet.add(sq.y); ySet.add(sq.y+sq.s); });
+    [...ySet].sort((a,b)=>a-b).forEach(yv => {
+      const sy = oy + yv * scale;
+      ctx.strokeStyle = 'rgba(44,36,23,0.3)'; ctx.lineWidth = 0.5;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(ox-6, sy); ctx.lineTo(ox + circ.W*scale+6, sy); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = COL.textMuted; ctx.font = '8px "IBM Plex Mono"'; ctx.textAlign = 'right';
+      if (yv > 0 && yv < circ.H) ctx.fillText('y='+yv, ox-8, sy+3);
+    });
+
+    // dimensions
+    ctx.fillStyle = COL.textMid; ctx.font = '500 11px "IBM Plex Mono"'; ctx.textAlign = 'center';
+    ctx.fillText(`W = ${circ.W} (total current)`, ox + circ.W*scale/2, oy - 12);
+    ctx.save(); ctx.translate(ox - 20, oy + circ.H*scale/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText(`H = ${circ.H} (voltage)`, 0, 0); ctx.restore();
+
+    // Info
+    ctx.fillStyle = COL.textMuted; ctx.font = '10px "IBM Plex Mono"'; ctx.textAlign = 'center';
+    ctx.fillText(circ.info, w/2, h - 8);
+
+    document.getElementById('circStatus').textContent =
+      `${circ.name}: ${nE} resistors (all 1Ω) → ${nE} squares. ${circ.info}`;
   }
 
-  const mapping={Tri:'triangle',Sq:'square',K4:'k4',Path:'path',House:'house'};
-  ['Tri','Sq','K4','Path','House'].forEach(name=>{
-    document.getElementById('btnSpec'+name).addEventListener('click',function(){
-      document.querySelectorAll('#cvSpec ~ .controls button').forEach(b=>b.classList.remove('active'));
-      this.classList.add('active'); currentGraph=mapping[name]; draw();
+  // Hover detection
+  c.addEventListener('mousemove', e => {
+    const rect = c.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const circ = CIRCUITS[current];
+    const rpad = 20;
+    const rx = w*0.38, ry = 16, rw = w-rx-rpad, rh = h-40;
+    const scale = Math.min(rw/circ.W, rh/circ.H);
+    const ox = rx + (rw - circ.W*scale)/2, oy = ry + (rh - circ.H*scale)/2;
+
+    let found = -1;
+    circ.squares.forEach((sq, i) => {
+      const sx=ox+sq.x*scale, sy=oy+sq.y*scale, ss=sq.s*scale;
+      if (mx>=sx && mx<=sx+ss && my>=sy && my<=sy+ss) found = i;
+    });
+    if (found !== hoveredEdge) { hoveredEdge = found; draw(); }
+  });
+  c.addEventListener('mouseleave', () => { if(hoveredEdge!==-1){hoveredEdge=-1;draw();} });
+
+  ['circ1','circ2','circ3'].forEach((key,i) => {
+    document.getElementById('btnCirc'+(i+1)).addEventListener('click', function(){
+      document.querySelectorAll('#cvCircuit ~ .controls button').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active'); current = key; hoveredEdge = -1; draw();
     });
   });
+
   draw();
-  window.addEventListener('resize',()=>{ ({c,ctx,w,h}=setupCanvas('cvSpec')); draw(); });
+  window.addEventListener('resize', ()=>{ ({c,ctx,w,h}=setupCanvas('cvCircuit')); draw(); });
 })();
 
 // ============================================================
-//  PANEL 2: CHARACTERISTIC POLYNOMIAL
+//  SQUARED RECTANGLE GALLERY
 // ============================================================
 (function(){
-  let {c,ctx,w,h} = setupCanvas('cvChar');
-  let currentGraph = 'triangle';
+  let {c,ctx,w,h} = setupCanvas('cvSqRect');
 
-  // Compute characteristic polynomial via Faddeev-LeVerrier
-  function charPoly(M) {
-    const n = M.length;
-    const coeffs = new Array(n+1).fill(0);
-    coeffs[0] = 1; // leading coefficient (λ^n)
-    let C = Array.from({length:n}, ()=>new Array(n).fill(0));
-    for (let k = 1; k <= n; k++) {
-      // C = M*C + coeffs[k-1]*I (but we track it iteratively)
-      if (k === 1) {
-        C = M.map(r=>[...r]);
-      } else {
-        const MC = Array.from({length:n}, (_,i)=>
-          Array.from({length:n}, (_,j)=>{
-            let s=0; for(let l=0;l<n;l++) s+=M[i][l]*C[l][j]; return s;
-          })
-        );
-        for (let i=0;i<n;i++) MC[i][i] += coeffs[k-1];
-        C = MC;
-      }
-      let tr=0; for(let i=0;i<n;i++) tr+=C[i][i];
-      coeffs[k] = -tr/k;
+  const TILINGS = {
+    sqr1: {
+      name: '3-square rectangle (3×2)', W: 3, H: 2,
+      squares: [{x:0,y:0,s:2},{x:2,y:0,s:1},{x:2,y:1,s:1}],
+      desc: 'The simplest non-trivial squared rectangle. A 2×2 square plus two unit squares. Corresponds to a series-parallel circuit: two equal resistors in series, paralleled with one resistor of twice the value.'
+    },
+    sqr2: {
+      name: '5-square rectangle (6×5)', W: 6, H: 5,
+      squares: [{x:0,y:0,s:3},{x:3,y:0,s:3},{x:0,y:3,s:2},{x:2,y:3,s:2},{x:4,y:3,s:2}],
+      desc: 'Two 3-squares on top, three 2-squares below. Not "perfect" (repeated sizes), but demonstrates Kirchhoff structure: current splits equally in each row. The two horizontal cuts correspond to the two nodes of a parallel circuit.'
+    },
+    sqr3: {
+      name: "Moron's 9-square SPSR (33×32)", W: 33, H: 32,
+      squares: [{x:0,y:0,s:15},{x:15,y:0,s:18},{x:0,y:15,s:8},{x:8,y:15,s:7},{x:8,y:22,s:1},{x:0,y:23,s:9},{x:9,y:22,s:10},{x:15,y:18,s:4},{x:19,y:18,s:14}],
+      desc: "Moron's 1925 masterpiece: the smallest simple perfect squared rectangle. All 9 squares have distinct side lengths (1, 4, 7, 8, 9, 10, 14, 15, 18). The tiny 1×1 square nestled between the 7, 8, 9, and 10 is the key to the construction."
+    },
+    sqr4: {
+      name: 'Scaled Moron (×2)', W: 66, H: 64,
+      squares: [{x:0,y:0,s:30},{x:30,y:0,s:36},{x:0,y:30,s:16},{x:16,y:30,s:14},{x:16,y:44,s:2},{x:0,y:46,s:18},{x:18,y:44,s:20},{x:30,y:36,s:8},{x:38,y:36,s:28}],
+      desc: 'The Moron tiling scaled by 2: every side length doubled. Same network topology, doubled currents. Squarings form equivalence classes under scaling. The underlying electrical network (and its spanning-tree count) is invariant.'
     }
-    return coeffs; // coeffs[k] is coefficient of λ^(n-k)
-  }
+  };
+
+  let current = 'sqr1';
+
+  const palette = [
+    'rgba(180,74,30,0.55)','rgba(26,107,74,0.55)','rgba(59,89,152,0.55)',
+    'rgba(196,148,10,0.55)','rgba(142,68,173,0.5)','rgba(22,160,133,0.5)',
+    'rgba(192,57,43,0.5)','rgba(44,62,80,0.45)','rgba(39,174,96,0.5)',
+  ];
+  const borders = ['#b44a1e','#1a6b4a','#3b5998','#c4940a','#8e44ad','#16a085','#c0392b','#2c3e50','#27ae60'];
 
   function draw() {
     ctx.clearRect(0,0,w,h);
-    const {A,L,n,nE} = getMatrices(currentGraph);
-    const coeffA = charPoly(A);
-    const coeffL = charPoly(L);
+    const t = TILINGS[current];
+    const pad=30;
+    const availW=w*0.55-pad*2, availH=h-pad*2-40;
+    const scale=Math.min(availW/t.W, availH/t.H);
+    const ox=pad+(availW-t.W*scale)/2, oy=pad+20+(availH-t.H*scale)/2;
 
-    const pad={top:48,bottom:50,left:40,right:40};
-    const plotW=w-pad.left-pad.right, plotH=h-pad.top-pad.bottom;
-    const halfW = plotW/2;
+    // outer rect
+    ctx.strokeStyle=COL.text; ctx.lineWidth=2;
+    ctx.strokeRect(ox,oy,t.W*scale,t.H*scale);
 
-    // Draw both polynomials side by side
-    const panels = [
-      {label:'p_A(λ) = det(λI − A)', coeffs:coeffA, color:COL.accent, dim:COL.accentDim},
-      {label:'p_L(λ) = det(λI − L)', coeffs:coeffL, color:COL.green, dim:COL.greenDim},
-    ];
-
-    panels.forEach((panel, pi)=>{
-      const ox = pad.left + pi*halfW + 10;
-      const aw = halfW - 20;
-
-      // title
-      ctx.fillStyle=panel.color; ctx.font='500 11px "IBM Plex Mono"'; ctx.textAlign='center';
-      ctx.fillText(panel.label, ox+aw/2, pad.top-10);
-
-      const maxCoeff = Math.max(...panel.coeffs.map(Math.abs), 1);
-      const barW = Math.min(aw/(n+2), 36);
-      const barArea = barW*(n+1);
-      const startX = ox + (aw-barArea)/2;
-
-      // zero line
-      const midY = pad.top + plotH*0.45;
-      ctx.strokeStyle=COL.border; ctx.lineWidth=0.5;
-      ctx.beginPath(); ctx.moveTo(ox,midY); ctx.lineTo(ox+aw,midY); ctx.stroke();
-
-      panel.coeffs.forEach((coeff,ci)=>{
-        const bx = startX + ci*barW;
-        const barH = (coeff/maxCoeff)*(plotH*0.38);
-        const by = midY - barH;
-
-        ctx.fillStyle = panel.dim;
-        ctx.fillRect(bx+2, Math.min(by,midY), barW-4, Math.abs(barH));
-        ctx.fillStyle = panel.color;
-        ctx.fillRect(bx+2, Math.min(by,midY), barW-4, 2);
-
-        // coefficient value
-        ctx.font='500 8px "IBM Plex Mono"'; ctx.textAlign='center';
-        const ly = coeff>=0 ? Math.min(by,midY)-4 : Math.max(by+Math.abs(barH),midY)+10;
-        ctx.fillText(Math.round(coeff).toString(), bx+barW/2, ly);
-
-        // power label
-        ctx.fillStyle=COL.textMuted; ctx.font='9px "IBM Plex Mono"';
-        ctx.fillText(`λ${ci<n?'⁰¹²³⁴⁵⁶⁷⁸⁹'[n-ci]||n-ci:'⁰'}`, bx+barW/2, pad.top+plotH+8);
-      });
+    // squares
+    t.squares.forEach((sq,i)=>{
+      const sx=ox+sq.x*scale, sy=oy+sq.y*scale, ss=sq.s*scale;
+      ctx.fillStyle=palette[i%palette.length];
+      ctx.fillRect(sx,sy,ss,ss);
+      ctx.strokeStyle=borders[i%borders.length]; ctx.lineWidth=1.5;
+      ctx.strokeRect(sx,sy,ss,ss);
+      if(ss>18){
+        ctx.fillStyle='#fff'; ctx.font=`600 ${Math.min(ss*0.35,16)}px "IBM Plex Mono"`;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(sq.s), sx+ss/2, sy+ss/2);
+      }
     });
 
-    // Polynomial text form
-    const polyStr = (coeffs, name) => {
-      const n2 = coeffs.length - 1;
-      return coeffs.map((c,i)=>{
-        const power = n2-i;
-        const cv = Math.round(c);
-        if(cv===0 && power<n2) return '';
-        const sign = cv>=0?(i>0?'+':''):'-';
-        const abs = Math.abs(cv);
-        const coefStr = abs===1&&power>0?'':abs.toString();
-        const varStr = power===0?'':(power===1?'λ':'λ'+('⁰¹²³⁴⁵⁶⁷⁸⁹'[power]||'^'+power));
-        return `${sign}${coefStr}${varStr}`;
-      }).filter(Boolean).join(' ');
-    };
+    // dimensions
+    ctx.fillStyle=COL.textMid; ctx.font='500 12px "IBM Plex Mono"'; ctx.textAlign='center';
+    ctx.fillText(`${t.W}`, ox+t.W*scale/2, oy-10);
+    ctx.save(); ctx.translate(ox-14, oy+t.H*scale/2); ctx.rotate(-Math.PI/2);
+    ctx.fillText(`${t.H}`, 0, 0); ctx.restore();
 
-    ctx.fillStyle=COL.textMid; ctx.font='11px "IBM Plex Mono"'; ctx.textAlign='center';
-    ctx.fillText(polyStr(coeffA,'A'), pad.left+halfW/2+10, h-14);
-    ctx.fillText(polyStr(coeffL,'L'), pad.left+halfW*1.5+10, h-14);
+    // right panel: description
+    const rx=w*0.58, rw=w*0.42-10;
+    let ty=pad+20;
+    ctx.fillStyle=COL.accent; ctx.font='600 13px "IBM Plex Mono"'; ctx.textAlign='left';
+    ctx.fillText(t.name, rx, ty); ty+=22;
 
-    // Spanning trees from L
-    const eigL = eigenvalues(L);
-    let st=1; eigL.forEach(l=>{if(Math.abs(l)>0.01)st*=l;}); st=Math.round(st/n);
-    document.getElementById('charStatus').textContent =
-      `Adjacency char. poly: degree ${n} | Laplacian char. poly: constant term / n → spanning trees = ${st}`;
+    ctx.fillStyle=COL.textMid; ctx.font='14px "Cormorant Garamond"';
+    const words=t.desc.split(' '); let line='';
+    for(const word of words){
+      const test=line+(line?' ':'')+word;
+      if(ctx.measureText(test).width>rw-4 && line){ ctx.fillText(line,rx,ty); ty+=18; line=word; }
+      else line=test;
+    }
+    if(line){ ctx.fillText(line,rx,ty); ty+=24; }
+
+    const sumSq=t.squares.reduce((a,sq)=>a+sq.s*sq.s,0);
+    ctx.fillStyle=COL.green; ctx.font='500 11px "IBM Plex Mono"';
+    ctx.fillText(`Σ sᵢ² = ${sumSq}`, rx, ty); ty+=16;
+    ctx.fillText(`W × H = ${t.W} × ${t.H} = ${t.W*t.H}`, rx, ty); ty+=16;
+    ctx.fillStyle=sumSq===t.W*t.H?COL.green:COL.accent;
+    ctx.fillText(sumSq===t.W*t.H?'✓ Sum of squares = area':'Σsᵢ² ≠ W×H', rx, ty); ty+=24;
+
+    ctx.fillStyle=COL.textMuted; ctx.font='10px "IBM Plex Mono"';
+    ctx.fillText('Side lengths:', rx, ty); ty+=14;
+    ctx.fillText(t.squares.map(sq=>sq.s).sort((a,b)=>b-a).join(', '), rx, ty);
+
+    document.getElementById('sqrStatus').textContent=
+      `${t.name}: ${t.squares.length} squares in a ${t.W}×${t.H} rectangle. Σsᵢ² = ${sumSq}.`;
   }
 
-  const mapping={Tri:'triangle',Sq:'square',K4:'k4',Path:'path'};
-  ['Tri','Sq','K4','Path'].forEach(name=>{
-    document.getElementById('btnChar'+name).addEventListener('click',function(){
-      document.querySelectorAll('#cvChar ~ .controls button').forEach(b=>b.classList.remove('active'));
-      this.classList.add('active'); currentGraph=mapping[name]; draw();
+  ['sqr1','sqr2','sqr3','sqr4'].forEach((key,i)=>{
+    document.getElementById('btnSqr'+(i+1)).addEventListener('click',function(){
+      document.querySelectorAll('#cvSqRect ~ .controls button').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active'); current=key; draw();
     });
   });
   draw();
-  window.addEventListener('resize',()=>{ ({c,ctx,w,h}=setupCanvas('cvChar')); draw(); });
+  window.addEventListener('resize',()=>{ ({c,ctx,w,h}=setupCanvas('cvSqRect')); draw(); });
+})();
+
+// ============================================================
+//  BACKTRACKING SQUARE TILER
+// ============================================================
+(function(){
+  let {c,ctx,w,h} = setupCanvas('cvBacktrack');
+  let currentTiling = null;
+  let tileW = 14, tileH = 3;
+
+  function isValid(board, row, col, size) {
+    if (row+size > board.length || col+size > board[0].length) return false;
+    for (let i=row;i<row+size;i++) for (let j=col;j<col+size;j++) if (board[i][j]) return false;
+    return true;
+  }
+  function placeSquare(board, row, col, size, val) {
+    for (let i=row;i<row+size;i++) for (let j=col;j<col+size;j++) board[i][j]=val;
+  }
+  function solve(board, W, H, result) {
+    for (let row=0;row<H;row++) for (let col=0;col<W;col++) {
+      if (!board[row][col]) {
+        const maxS = Math.min(W-col, H-row);
+        for (let size=maxS;size>=1;size--) {
+          if (isValid(board,row,col,size)) {
+            placeSquare(board,row,col,size,true);
+            result.push({x:col, y:H-row-size, s:size});
+            if (solve(board,W,H,result)) return true;
+            placeSquare(board,row,col,size,false);
+            result.pop();
+          }
+        }
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function doTile(W,H) {
+    tileW=W; tileH=H;
+    const board = Array.from({length:H}, ()=>new Array(W).fill(false));
+    const result = [];
+    const ok = solve(board,W,H,result);
+    currentTiling = ok ? {W,H,squares:result} : null;
+    draw();
+  }
+
+  const tilePalette = ['rgba(180,74,30,0.55)','rgba(26,107,74,0.55)','rgba(59,89,152,0.55)','rgba(196,148,10,0.55)','rgba(142,68,173,0.45)','rgba(22,160,133,0.45)','rgba(192,57,43,0.45)','rgba(44,62,80,0.4)','rgba(39,174,96,0.45)','rgba(41,128,185,0.45)','rgba(243,156,18,0.45)','rgba(155,89,182,0.45)'];
+  const tileBorders = ['#b44a1e','#1a6b4a','#3b5998','#c4940a','#8e44ad','#16a085','#c0392b','#2c3e50','#27ae60','#2980b9','#f39c12','#9b59b6'];
+
+  function draw() {
+    ctx.clearRect(0,0,w,h);
+    if (!currentTiling) {
+      ctx.fillStyle=COL.textMuted; ctx.font='13px "IBM Plex Mono"'; ctx.textAlign='center';
+      ctx.fillText('No tiling found (or not yet computed)',w/2,h/2);
+      return;
+    }
+    const t=currentTiling;
+    const pad=16;
+    const scale=Math.min((w-pad*2)/t.W, (h-pad*2)/t.H);
+    const ox=pad+(w-pad*2-t.W*scale)/2, oy=pad+(h-pad*2-t.H*scale)/2;
+
+    ctx.strokeStyle=COL.text; ctx.lineWidth=1.5;
+    ctx.strokeRect(ox,oy,t.W*scale,t.H*scale);
+
+    t.squares.forEach((sq,i)=>{
+      const sx=ox+sq.x*scale, sy=oy+(t.H-sq.y-sq.s)*scale, ss=sq.s*scale;
+      ctx.fillStyle=tilePalette[i%tilePalette.length];
+      ctx.fillRect(sx,sy,ss,ss);
+      ctx.strokeStyle=tileBorders[i%tileBorders.length]; ctx.lineWidth=1;
+      ctx.strokeRect(sx,sy,ss,ss);
+      if(ss>14){
+        ctx.fillStyle='#fff'; ctx.font=`600 ${Math.min(ss*0.38,14)}px "IBM Plex Mono"`;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(String(sq.s), sx+ss/2, sy+ss/2);
+      }
+    });
+
+    // stats
+    const sizes = t.squares.map(s=>s.s).sort((a,b)=>b-a);
+    const sumSq = sizes.reduce((a,s)=>a+s*s,0);
+    ctx.fillStyle=COL.textMuted; ctx.font='10px "IBM Plex Mono"'; ctx.textAlign='right';
+    ctx.fillText(`${t.squares.length} squares: [${sizes.join(',')}]`, w-pad, h-4);
+    ctx.fillText(`Σs²=${sumSq} = ${t.W}×${t.H}`, w-pad, h-16);
+
+    document.getElementById('btStatus').textContent=
+      `${t.W}×${t.H} = ${t.W*t.H}. ${t.squares.length} squares. Σsᵢ² = ${sumSq}.`;
+  }
+
+  document.getElementById('btnTile').addEventListener('click',()=>{
+    const W=parseInt(document.getElementById('inpW').value)||10;
+    const H=parseInt(document.getElementById('inpH').value)||3;
+    document.querySelectorAll('#cvBacktrack ~ .controls button').forEach(b=>b.classList.remove('active'));
+    doTile(W,H);
+  });
+  [{id:'btnTile10x3',w:10,h:3},{id:'btnTile14x3',w:14,h:3},{id:'btnTile8x5',w:8,h:5},{id:'btnTile22x3',w:22,h:3}].forEach(p=>{
+    document.getElementById(p.id).addEventListener('click',function(){
+      document.querySelectorAll('#cvBacktrack ~ .controls button').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+      document.getElementById('inpW').value=p.w;
+      document.getElementById('inpH').value=p.h;
+      doTile(p.w,p.h);
+    });
+  });
+
+  doTile(14,3);
+  window.addEventListener('resize',()=>{ ({c,ctx,w,h}=setupCanvas('cvBacktrack')); draw(); });
 })();
 
 // Scroll reveal
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
-}, {threshold:0.12});
+}, {threshold:0.05, rootMargin:'0px 0px 50px 0px'});
 document.querySelectorAll('section').forEach(s=>observer.observe(s));
+// Fallback: reveal all sections after a short delay in case observer doesn't fire
+setTimeout(()=>{ document.querySelectorAll('section').forEach(s=>s.classList.add('visible')); }, 800);
 
 // KaTeX
 renderMathInElement(document.body, {
@@ -528,3 +733,4 @@ renderMathInElement(document.body, {
 </script>
 </body>
 </html>
+
